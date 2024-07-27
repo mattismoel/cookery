@@ -5,3 +5,14 @@
 :root {
   --nav-height: 3.5rem;
 }
+
+@layer utilities {
+  .mx-responsive {
+    @apply mx-6 sm:mx-8 md:mx-10 lg:mx-16;
+  }
+
+
+  .my-responsive {
+    @apply my-6 md:my-10 lg:my-16;
+  }
+}
