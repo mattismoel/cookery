@@ -16,7 +16,7 @@ func NewRecipeService(storage storage.Storage) *RecipeService {
 }
 
 func (s RecipeService) ById(id int64) (model.Recipe, error) {
-	rcp, err := s.storage.RecipeByID(id)
+	rcp, err := s.storage.RecipeById(id)
 	if err != nil {
 		return model.Recipe{}, fmt.Errorf("could not get recipe with id %d from storage: %v", id, err)
 	}
