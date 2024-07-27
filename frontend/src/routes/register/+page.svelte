@@ -11,6 +11,14 @@
       align="center"
     />
     <InputText
+      props={{ type: "text", placeholder: "Firstname", name: "firstname" }}
+      align="center"
+    />
+    <InputText
+      props={{ type: "text", placeholder: "Lastname", name: "lastname" }}
+      align="center"
+    />
+    <InputText
       props={{ type: "password", placeholder: "Password", name: "password" }}
       align="center"
     />
