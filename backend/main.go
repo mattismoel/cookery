@@ -10,9 +10,11 @@ import (
 
 func main() {
 	storage := memory.NewMemoryStorage()
+
+	usrSrv := service.NewUserService(storage)
 	recipeSrv := service.NewRecipeService(storage)
 
-	srv := server.New(":8080", recipeSrv)
+	srv := server.New(":8080", usrSrv, recipeSrv)
 
 	err := srv.Start()
 	if err != nil {
