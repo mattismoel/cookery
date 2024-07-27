@@ -20,7 +20,7 @@
 </script>
 
 <button
-  class={`bg-green-400 border-[1px] border-green-500 font-semibold text-white py-2 px-4 rounded-sm ${fitMap.get(fitX)}`}
+  class={`bg-green-400 hover:bg-green-500 border-[1px] border-green-500 hover:border-green-600 font-semibold text-white py-2 px-4 rounded-sm ${fitMap.get(fitX)}`}
   on:click={onClick}
   {...props}
 >
