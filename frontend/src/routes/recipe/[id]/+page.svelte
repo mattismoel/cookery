@@ -16,12 +16,12 @@
       alt="Recipe."
       class="object-cover h-full w-full"
     />
-    <div class="p-6">
+    <div class="mx-responsive my-responsive">
       <h1 class="font-semibold uppercase text-4xl mb-2">{recipe.title}</h1>
       <RecipeInformation {recipe} favourite={false} />
     </div>
   </div>
-  <article class="p-6">
+  <article class="mx-responsive my-responsive">
     <h2 class="font-semibold text-xl mb-4">Ingredients.</h2>
     <div class="flex flex-col gap-8 mb-8">
       {#each recipe.subRecipes as subRecipe}
