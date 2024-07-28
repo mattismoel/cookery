@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/mattismoel/cookery/internal/model"
@@ -15,8 +16,8 @@ func NewRecipeService(storage storage.Storage) *RecipeService {
 	return &RecipeService{storage: storage}
 }
 
-func (s RecipeService) ById(id int64) (model.Recipe, error) {
-	rcp, err := s.storage.RecipeById(id)
+func (s RecipeService) ById(ctx context.Context, id int64) (model.Recipe, error) {
+	rcp, err := s.storage.RecipeById(ctx, id)
 	if err != nil {
 		return model.Recipe{}, fmt.Errorf("could not get recipe with id %d from storage: %v", id, err)
 	}

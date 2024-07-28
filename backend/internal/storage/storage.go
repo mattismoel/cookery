@@ -1,11 +1,16 @@
 package storage
 
-import "github.com/mattismoel/cookery/internal/model"
+import (
+	"context"
+
+	"github.com/mattismoel/cookery/internal/model"
+)
 
 type Storage interface {
-	UserById(int64) (model.User, error)
-	AddUser(model.User) (int64, error)
+	UserById(context.Context, int64) (model.User, error)
+	UserByEmail(context.Context, string) (model.User, error)
+	AddUser(context.Context, model.User) (int64, error)
 
-	RecipeById(int64) (model.Recipe, error)
-	AllRecipes() ([]model.Recipe, error)
+	RecipeById(context.Context, int64) (model.Recipe, error)
+	AllRecipes(context.Context) ([]model.Recipe, error)
 }
