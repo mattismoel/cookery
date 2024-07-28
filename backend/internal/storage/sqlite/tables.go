@@ -13,12 +13,6 @@ func (s SQLiteStorage) createUsersTable(ctx context.Context) error {
 
 	defer tx.Rollback()
 
-	// Id           int64  `json:"id"`
-	// Email        string `json:"email"`
-	// Firstname    string `json:"firstname"`
-	// Lastname     string `json:"lastname"`
-	// PasswordHash string `json:"passwordHash,omitempty"`
-
 	query := `
   CREATE TABLE IF NOT EXISTS users (
     id                INTEGER     PRIMARY KEY       NOT NULL,

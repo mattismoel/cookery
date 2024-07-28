@@ -15,7 +15,7 @@ func (s SQLiteStorage) RecipeById(ctx context.Context, id int64) (model.Recipe, 
 
 	defer tx.Rollback()
 
-	// SubRecipes   []SubRecipe `json:"subRecipes"`
+	// TODO: Implement SubRecipes   []SubRecipe `json:"subRecipes"`
 	query := `
   SELECT
     id,
@@ -60,13 +60,7 @@ func (s SQLiteStorage) AllRecipes(ctx context.Context) ([]model.Recipe, error) {
 
 	defer tx.Rollback()
 
-	// Id           int64       `json:"id"`
-	// Title        string      `json:"title"`
-	// Author       string      `json:"author"`
-	// BannerUrl    string      `json:"bannerUrl"`
-	// CookMinutes  int         `json:"cookMinutes"`
-	// TotalMinutes int         `json:"totalMinutes"`
-	// SubRecipes   []SubRecipe `json:"subRecipes"`
+	// TODO: Implement SubRecipes   []SubRecipe `json:"subRecipes"`
 	query := `
   SELECT
     id,
