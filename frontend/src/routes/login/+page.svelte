@@ -3,7 +3,7 @@
   import InputText from "$lib/component/InputText.svelte";
 </script>
 
-<main class="px-8 flex items-center h-[calc(100vh-var(--nav-height))]">
+<main class="mx-responsive flex items-center h-[calc(100vh-var(--nav-height))]">
   <form method="post">
     <h1 class="font-semibold text-2xl mb-4">Welcome back.</h1>
     <div class="space-y-2">

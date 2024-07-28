@@ -16,11 +16,21 @@ func (s memoryStorage) UserById(id int64) (model.User, error) {
 		return user, nil
 	}
 
-	return model.User{}, fmt.Errorf("could not find user with id: %d", id)
+	return model.User{}, fmt.Errorf("could not find user with id: %d.", id)
 }
 
 func (s memoryStorage) AddUser(u model.User) (int64, error) {
 	users = append(users, u)
 	id := int64(rand.Int())
 	return id, nil
+}
+
+func (s memoryStorage) UserByEmail(email string) (model.User, error) {
+	for _, usr := range users {
+		if usr.Email == email {
+			return usr, nil
+		}
+	}
+
+	return model.User{}, fmt.Errorf("could not find user with email %q.", email)
 }
