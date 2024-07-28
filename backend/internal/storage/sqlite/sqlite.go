@@ -57,5 +57,10 @@ func (s SQLiteStorage) createTables(ctx context.Context) error {
 		return fmt.Errorf("could not create users table: %v", err)
 	}
 
+	err = s.createRecipesTable(ctx)
+	if err != nil {
+		return fmt.Errorf("could not create recipes table: %v", err)
+	}
+
 	return nil
 }
