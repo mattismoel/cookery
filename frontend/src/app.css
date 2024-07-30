@@ -16,6 +16,15 @@
     font-family: "Poppins", system-ui, sans-serif;
   }
 
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    appearance: textfield;
+  }
 }
 
 @layer utilities {
@@ -26,5 +35,11 @@
 
   .my-responsive {
     @apply my-6 md:my-10 lg:my-16;
+  }
+}
+
+@layer components {
+  .ingredient-input {
+    @apply bg-transparent border-b border-b-[1px] border-gray-200 focus:outline-none;
   }
 }
