@@ -79,6 +79,7 @@ func (s SQLiteStorage) createRecipesTable(ctx context.Context) error {
     id                INTEGER     PRIMARY KEY     NOT NULL,
     name              TEXT                        NOT NULL,
     unit              TEXT,
+    amount            INTEGER,
     note              TEXT,
 
     subrecipe_id      INTEGER                     NOT NULL,

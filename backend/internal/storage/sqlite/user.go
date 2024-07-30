@@ -82,7 +82,6 @@ func (s SQLiteStorage) UserByEmail(ctx context.Context, email string) (model.Use
 }
 
 func (s SQLiteStorage) AddUser(ctx context.Context, usr model.User) (int64, error) {
-	fmt.Println(ctx)
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return -1, fmt.Errorf(ErrBeginTxLayout, err)

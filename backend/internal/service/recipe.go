@@ -24,3 +24,12 @@ func (s RecipeService) ById(ctx context.Context, id int64) (model.Recipe, error)
 
 	return rcp, nil
 }
+
+func (s RecipeService) Add(ctx context.Context, rcp model.Recipe) (int64, error) {
+	id, err := s.storage.InsertRecipe(ctx, rcp)
+	if err != nil {
+		return -1, fmt.Errorf("could not insert recipe into storage: %v", err)
+	}
+
+	return id, nil
+}

@@ -23,7 +23,7 @@ type Instruction struct {
 type Recipe struct {
 	Id           int64       `json:"id"`
 	Title        string      `json:"title"`
-	Author       string      `json:"author"`
+	Author       User        `json:"author"`
 	BannerUrl    string      `json:"bannerUrl"`
 	CookMinutes  int         `json:"cookMinutes"`
 	TotalMinutes int         `json:"totalMinutes"`
