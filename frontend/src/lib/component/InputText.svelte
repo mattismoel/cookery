@@ -8,7 +8,7 @@
   export let align: "left" | "center" | "right" = "left";
   export let fitX: Fit = "expand";
 
-  let value: string;
+  export let value: string = "";
 
   const dispatch = createEventDispatcher();
 

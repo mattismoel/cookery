@@ -3,17 +3,22 @@ package service
 import (
 	"context"
 	"fmt"
+	"mime/multipart"
+	"path"
 
+	"github.com/google/uuid"
+	"github.com/mattismoel/cookery/internal/filemanager"
 	"github.com/mattismoel/cookery/internal/model"
 	"github.com/mattismoel/cookery/internal/storage"
 )
 
 type RecipeService struct {
-	storage storage.Storage
+	storage     storage.Storage
+	fileManager filemanager.FileManager
 }
 
-func NewRecipeService(storage storage.Storage) *RecipeService {
-	return &RecipeService{storage: storage}
+func NewRecipeService(storage storage.Storage, fm filemanager.FileManager) *RecipeService {
+	return &RecipeService{storage: storage, fileManager: fm}
 }
 
 func (s RecipeService) ById(ctx context.Context, id int64) (model.Recipe, error) {
@@ -32,4 +37,27 @@ func (s RecipeService) Add(ctx context.Context, rcp model.Recipe) (int64, error)
 	}
 
 	return id, nil
+}
+
+func (s RecipeService) SetBannerImage(ctx context.Context, id int64, fh *multipart.FileHeader) (string, error) {
+	ext := path.Ext(fh.Filename)
+	bannerName := fmt.Sprintf("recipes/banner-%s%s", uuid.NewString(), ext)
+	bannerFile, err := fh.Open()
+	if err != nil {
+		return "", fmt.Errorf("could not open banner file: %v", err)
+	}
+
+	defer bannerFile.Close()
+
+	bannerUrl, err := s.fileManager.Save(ctx, bannerFile, bannerName)
+	if err != nil {
+		return "", fmt.Errorf("could not save banner image: %v", err)
+	}
+
+	err = s.storage.SetBannerUrl(ctx, id, bannerUrl)
+	if err != nil {
+		return "", fmt.Errorf("could not set banner url: %v", err)
+	}
+
+	return bannerUrl, nil
 }

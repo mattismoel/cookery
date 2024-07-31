@@ -14,4 +14,5 @@ type Storage interface {
 	RecipeById(context.Context, int64) (model.Recipe, error)
 	AllRecipes(context.Context) ([]model.Recipe, error)
 	InsertRecipe(context.Context, model.Recipe) (int64, error)
+	SetBannerUrl(context.Context, int64, string) error
 }

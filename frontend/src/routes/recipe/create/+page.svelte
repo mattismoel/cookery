@@ -1,5 +1,6 @@
 <script lang="ts">
   import Button from "$lib/component/Button.svelte";
+  import FileUploader from "$lib/component/FileUploader.svelte";
   import InputText from "$lib/component/InputText.svelte";
   import SubRecipeCard from "$lib/component/SubRecipeCard.svelte";
   import type {
@@ -11,20 +12,21 @@
   import { onMount } from "svelte";
 
   let subRecipes: TrackableSubRecipe[] = [];
-
   let recipe: Recipe = {} as Recipe;
+  let bannerFile: File;
 
   onMount(() => {
     recipe.subRecipes = [];
   });
 
   const onSubmit = async (e: CustomEvent) => {
+    const formData = new FormData();
+    formData.append("recipe", JSON.stringify(recipe));
+    formData.append("bannerFile", bannerFile);
+
     await fetch("/recipe/create", {
       method: "POST",
-      body: JSON.stringify(recipe),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      body: formData,
     });
   };
 
@@ -40,74 +42,76 @@
     ];
   };
 
-  const deleteSubRecipe = (e: CustomEvent) => {
-    const trackingId = e.detail.trackingId;
-    subRecipes = subRecipes.filter(
-      (subRecipe) => subRecipe.trackingId !== trackingId,
-    );
+  const onDeleteSubRecipe = (e: CustomEvent) => {
+    const subIdx = e.detail.subIdx as number;
+    subRecipes = subRecipes.filter((_subRecipe, i) => i !== subIdx);
+  };
+
+  const onBannerChange = (e: CustomEvent) => {
+    if (!e.detail.files) {
+      return;
+    }
+
+    const files = e.detail.files as FileList;
   };
 
   const onSubRecipeChange = (e: CustomEvent) => {
-    if (!e.detail.subRecipe || e.detail.subRecipeCount == null) {
+    if (!e.detail.subRecipe || e.detail.subIdx == null) {
       return;
     }
 
     const subRecipe = e.detail.subRecipe as SubRecipe;
-    const subRecipeCount = e.detail.subRecipeCount as number;
-    recipe.subRecipes[subRecipeCount] = subRecipe;
-  };
-
-  const onTitleChange = (e: CustomEvent) => {
-    recipe.title = e.detail.value;
-  };
-
-  const onCookMinutesChange = (e: CustomEvent) => {
-    recipe.cookMinutes = parseInt(e.detail.value);
-  };
-
-  const onTotalMinutesChange = (e: CustomEvent) => {
-    recipe.totalMinutes = parseInt(e.detail.value);
+    const subIdx = e.detail.subIdx as number;
+    recipe.subRecipes[subIdx] = subRecipe;
   };
 </script>
 
 <main class="h-[calc(100vh-var(--nav-height))] mx-responsive my-responsive">
-  <form method="POST">
+  <form method="POST" enctype="multipart/form-data">
     <input type="hidden" name="subCount" value={subRecipes.length} />
     <h1 class="font-semibold text-xl mb-4">Create Recipe.</h1>
     <div class="space-y-2">
       <InputText
-        on:change={onTitleChange}
+        on:change={(e) => (recipe.title = e.detail.value.toString())}
         align="center"
         props={{ type: "text", name: "title", placeholder: "Title" }}
       />
       <div class="w-full grid grid-cols-2 gap-2">
         <InputText
+          on:change={(e) => (recipe.cookMinutes = parseFloat(e.detail.value))}
           fitX="expand"
           props={{
             type: "number",
             name: "cookMinutes",
             placeholder: "Cook Minutes",
           }}
-          on:change={onCookMinutesChange}
         />
         <InputText
+          on:change={(e) => (recipe.totalMinutes = parseFloat(e.detail.value))}
           fitX="expand"
           props={{
             type: "number",
-            name: "cookMinutes",
+            name: "totalMinutes",
             placeholder: "Total Minutes",
           }}
-          on:change={onTotalMinutesChange}
         />
       </div>
+      <FileUploader
+        on:change={(e) => {
+          e.detail.files && e.detail.files.length > 0
+            ? (bannerFile = e.detail.files[0])
+            : undefined;
+        }}
+        name="bannerUrl"
+        accept="image/png, image/webp, image/jpeg"
+      />
       <h2 class="font-semibold">Parts.</h2>
       <div class="flex flex-col space-y-2">
-        {#each subRecipes as subRecipe, i (subRecipe.trackingId)}
+        {#each subRecipes as subRecipe, subIdx (subRecipe.trackingId)}
           <SubRecipeCard
             on:change={onSubRecipeChange}
-            on:delete={deleteSubRecipe}
-            subRecipeCount={i}
-            trackingId={subRecipe.trackingId}
+            on:delete={onDeleteSubRecipe}
+            {subIdx}
           />
         {/each}
       </div>

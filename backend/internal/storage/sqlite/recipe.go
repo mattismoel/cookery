@@ -20,6 +20,7 @@ func (s SQLiteStorage) RecipeById(ctx context.Context, id int64) (model.Recipe, 
   SELECT
     r.id,
     r.title,
+    r.banner_url,
     r.cook_minutes,
     r.total_minutes
   FROM
@@ -33,7 +34,7 @@ func (s SQLiteStorage) RecipeById(ctx context.Context, id int64) (model.Recipe, 
 			&rcp.Id,
 			&rcp.Title,
 			// &rcp.Author,
-			// &rcp.BannerUrl,
+			&rcp.BannerUrl,
 			&rcp.CookMinutes,
 			&rcp.TotalMinutes,
 		)
@@ -58,7 +59,6 @@ func (s SQLiteStorage) RecipeById(ctx context.Context, id int64) (model.Recipe, 
 func (s SQLiteStorage) SubRecipes(tx *sql.Tx, recipeId int64) ([]model.SubRecipe, error) {
 	query := "SELECT id, title FROM subrecipes WHERE recipe_id = ?"
 
-	fmt.Println("rcpid", recipeId)
 	rows, err := tx.Query(query, recipeId)
 	if err != nil {
 		return nil, fmt.Errorf(ErrExecQueryLayout, err)
@@ -303,6 +303,29 @@ func (s SQLiteStorage) AddInstructions(tx *sql.Tx, instructions []model.Instruct
 		if err != nil {
 			return fmt.Errorf(ErrExecQueryLayout, err)
 		}
+	}
+
+	return nil
+}
+
+func (s SQLiteStorage) SetBannerUrl(ctx context.Context, id int64, url string) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf(ErrBeginTxLayout, err)
+	}
+
+	defer tx.Rollback()
+
+	query := "UPDATE recipes SET banner_url = ? WHERE id = ?"
+
+	_, err = tx.ExecContext(ctx, query, url, id)
+	if err != nil {
+		return fmt.Errorf(ErrExecQueryLayout, err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf(ErrCommitTxLayout, err)
 	}
 
 	return nil

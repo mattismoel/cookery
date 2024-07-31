@@ -4,15 +4,19 @@
   import type { Instruction } from "$lib/types/Recipe";
   import { createEventDispatcher, onMount } from "svelte";
 
-  export let subRecipeCount: number;
-  export let instructionCount: number;
-  export let trackingId: string;
+  export let subIdx: number;
+  export let instructionIdx: number;
 
   let textArea: HTMLTextAreaElement;
+  let instruction: Instruction = {} as Instruction;
 
   const dispatch = createEventDispatcher();
 
   onMount(() => textArea.focus());
+
+  $: {
+    dispatch("change", { instructionIdx, instruction });
+  }
 
   const resizeTextArea = () => {
     const { style } = textArea;
@@ -22,30 +26,20 @@
   };
 
   const deleteSelf = () => {
-    dispatch("delete", { trackingId });
-  };
-
-  const onChange = (e: Event) => {
-    const instruction: Instruction = {
-      text: textArea.value,
-      imageUrl: "no implementation",
-    };
-
-    dispatch("change", {
-      instructionCount: instructionCount,
-      instruction,
-    });
+    dispatch("delete", { instructionIdx });
   };
 </script>
 
 <div class="flex gap-2 last:mb-4">
   <li class="w-4" />
   <textarea
-    name={`sub-${subRecipeCount}-instruction-${instructionCount}`}
+    name={`sub-${subIdx}-instruction-${instructionIdx}-text`}
+    rows="1"
+    on:change={(e) => {
+      instruction.text = e.currentTarget.value;
+    }}
     bind:this={textArea}
     on:input={resizeTextArea}
-    on:change={onChange}
-    rows="1"
     class="resize-none overflow-y-hidden w-full bg-transparent border-b-[1px] focus:outline-none rounded-sm"
     value=""
   />

@@ -5,13 +5,11 @@ import type { Recipe } from "$lib/types/Recipe";
 import type { APIError } from "$lib/types/APIError";
 
 export const POST: RequestHandler = async ({ request }) => {
-  const recipe = await request.json() as Recipe;
-  console.log(recipe)
+  const formData = await request.formData()
 
   await fetch(`${SECRET_SERVER_URL}/recipe`, {
     method: "PUT",
-    body: JSON.stringify(recipe),
-    headers: { "Content-Type": "application/json" },
+    body: formData,
   })
     .then(async res => {
       if (!res.ok) {

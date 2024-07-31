@@ -1,111 +1,86 @@
 <script lang="ts">
   import Icon from "$lib/assets/icons/Icon.svelte";
   import IconTrash from "$lib/assets/icons/IconTrash.svelte";
-  import type {
-    Ingredient,
-    Instruction,
-    SubRecipe,
-    TrackableIngredient,
-    TrackableInstruction,
-  } from "$lib/types/Recipe";
+  import type { Ingredient, Instruction, SubRecipe } from "$lib/types/Recipe";
   import { createEventDispatcher, onMount } from "svelte";
   import Button from "./Button.svelte";
   import IngredientInput from "./IngredientInput.svelte";
   import InstructionInput from "./InstructionInput.svelte";
-  import { generateRandomTrackingId } from "$lib/util";
 
-  export let trackingId: string;
-  export let subRecipeCount: number;
-
-  let ingredients: TrackableIngredient[] = [];
-  let instructions: TrackableInstruction[] = [];
+  export let subIdx: number;
 
   let titleInput: HTMLInputElement;
+  export let subRecipe: SubRecipe = { ingredients: [], instructions: [] };
 
-  let subRecipe: SubRecipe = { ingredients: [], instructions: [] };
   const dispatch = createEventDispatcher();
-
-  const onTitleChange = (
-    e: Event & {
-      currentTarget: EventTarget & HTMLInputElement;
-    },
-  ) => {
-    subRecipe.title = e.currentTarget.value;
-  };
-
-  const onIngredientsChange = (e: CustomEvent) => {
-    const ingredientCount = e.detail.ingredientCount as number;
-    const ingredient = e.detail.ingredient as Ingredient;
-
-    subRecipe.ingredients[ingredientCount] = ingredient;
-  };
-
-  const onInstructionsChange = (e: CustomEvent) => {
-    const instructionCount = e.detail.instructionCount as number;
-    const instruction = e.detail.instruction as Instruction;
-
-    subRecipe.instructions[instructionCount] = instruction;
-  };
-
-  $: {
-    dispatch("change", { subRecipe, subRecipeCount });
-  }
 
   onMount(() => {
     titleInput.focus();
   });
 
+  $: {
+    dispatch("change", { subRecipe, subIdx });
+  }
+
   const onDelete = () => {
-    dispatch("delete", { trackingId });
+    dispatch("delete", { subIdx });
   };
 
   const onAddIngredient = () => {
-    ingredients = [
-      ...ingredients,
-      { trackingId: generateRandomTrackingId(), name: "" },
-    ];
+    subRecipe.ingredients = [...subRecipe.ingredients, { name: "" }];
   };
 
   const onDeleteIngredient = (e: CustomEvent) => {
-    ingredients = ingredients.filter((ingredient) => {
-      return ingredient.trackingId != e.detail.trackingId;
-    });
+    const ingredientIdx = e.detail.ingredientIdx as number;
+    subRecipe.ingredients = subRecipe.ingredients.filter(
+      (_ingredient, idx) => idx !== ingredientIdx,
+    );
+  };
+
+  const onIngredientChange = (e: CustomEvent) => {
+    const ingredientIdx = e.detail.ingredientIdx as number;
+    const ingredient = e.detail.ingredient as Ingredient;
+    subRecipe.ingredients[ingredientIdx] = ingredient;
   };
 
   const onAddInstruction = () => {
-    instructions = [
-      ...instructions,
-      { text: "", trackingId: generateRandomTrackingId() },
-    ];
+    subRecipe.instructions = [...subRecipe.instructions, { text: "" }];
   };
 
   const onDeleteInstruction = (e: CustomEvent) => {
-    instructions = instructions.filter((instruction) => {
-      return instruction.trackingId != e.detail.trackingId;
-    });
+    const instructionIdx = e.detail.instructionIdx as number;
+    subRecipe.instructions = subRecipe.instructions.filter(
+      (_instruction, idx) => {
+        idx !== instructionIdx;
+      },
+    );
+  };
+
+  const onInstructionChange = (e: CustomEvent) => {
+    const instructionIdx = e.detail.instructionIdx as number;
+    const instruction = e.detail.instruction as Instruction;
+    subRecipe.instructions[instructionIdx] = instruction;
   };
 </script>
 
 <div class="relative bg-gray-100 p-4 rounded-md border-[1px]">
-  <input type="hidden" name={trackingId} />
+  <input type="hidden" />
   <input
-    name={`sub-${subRecipeCount}-title`}
+    name={`sub-${subIdx}-title`}
     type="text"
     placeholder="Recipe Title"
     class="w-full mb-4 font-semibold text-2xl bg-transparent border-b-[1px] focus:outline-none"
     bind:this={titleInput}
-    on:change={onTitleChange}
+    on:change={(e) => (subRecipe.title = e.currentTarget.value)}
   />
   <h2 class="font-semibold mb-2 text-gray-700">Ingredients.</h2>
   <ul class="list-disc list-inside flex flex-col gap-2">
-    {#each ingredients as ingredient, i (ingredient.trackingId)}
+    {#each subRecipe.ingredients as ingredient, ingredientIdx}
       <IngredientInput
-        on:change={onIngredientsChange}
-        on:blur={() => {}}
-        trackingId={ingredient.trackingId}
-        ingredientCount={i}
-        {subRecipeCount}
+        on:change={onIngredientChange}
         on:delete={onDeleteIngredient}
+        {subIdx}
+        {ingredientIdx}
       />
     {/each}
   </ul>
@@ -114,13 +89,12 @@
   >
   <h2 class="font-semibold mb-2 text-gray-700">Instructions.</h2>
   <ol class="list-decimal list-inside flex flex-col gap-2">
-    {#each instructions as instruction, i (instruction.trackingId)}
+    {#each subRecipe.instructions as instruction, instructionIdx}
       <InstructionInput
         on:delete={onDeleteInstruction}
-        trackingId={instruction.trackingId}
-        {subRecipeCount}
-        instructionCount={i}
-        on:change={onInstructionsChange}
+        on:change={onInstructionChange}
+        {subIdx}
+        {instructionIdx}
       />
     {/each}
   </ol>
